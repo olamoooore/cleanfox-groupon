@@ -49,7 +49,7 @@ export default function Home() {
   const handleManualSubmit = async (data: ManualRedemptionData) => {
     try {
       // Upload voucher file (now required)
-      let voucherImageUrls: string[] = [];
+      const voucherImageUrls: string[] = [];
       if (data.voucherFile) {
         try {
           const voucherUrl = await uploadImageToSupabase(data.voucherFile, 'vouchers');
@@ -63,7 +63,7 @@ export default function Home() {
       }
       
       // Upload vehicle images if they exist
-      let vehicleImageUrls: string[] = [];
+      const vehicleImageUrls: string[] = [];
       if (data.vehicleImages && data.vehicleImages.length > 0) {
         try {
           for (const vehicleImage of data.vehicleImages) {
@@ -307,7 +307,7 @@ export default function Home() {
                     Request Submitted Successfully!
                   </h3>
                   <p className="text-white/80 text-lg mb-8 max-w-md mx-auto leading-relaxed">
-                    Thank you for choosing our services. We'll contact you soon to confirm your appointment for {selectedService.name}.
+                    Thank you for choosing our services. We&apos;ll contact you soon to confirm your appointment for {selectedService.name}.
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-sm mb-8">
                     <div className="p-4 bg-white/10 rounded-xl border border-white/20 backdrop-blur-sm"><span className="text-white/60 block mb-1">Voucher Code:</span> <span className="font-mono text-white">{submission.voucherCode}</span></div>

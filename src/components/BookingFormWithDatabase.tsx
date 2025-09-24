@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Calendar, CheckCircle, User, Mail, Phone, MapPin, Clock, MessageSquare, Camera, Upload, X } from 'lucide-react';
+import Image from 'next/image';
+import { Calendar, CheckCircle, User, MapPin, Clock, MessageSquare, Camera, Upload, X } from 'lucide-react';
 import type { Service } from './ServiceSelector';
 import { supabase } from '@/lib/supabase';
 
@@ -46,7 +47,7 @@ export default function BookingFormWithDatabase({ service, couponCode, onBack }:
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const IconComponent = service.icon;
+  // Service icon will be displayed using service.iconPath
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -164,7 +165,7 @@ export default function BookingFormWithDatabase({ service, couponCode, onBack }:
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Booking Submitted Successfully!</h2>
           <p className="text-gray-600 mb-6">
-            Thank you for your booking request. We'll contact you within 24 hours to confirm your appointment.
+            Thank you for your booking request. We&apos;ll contact you within 24 hours to confirm your appointment.
           </p>
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <h3 className="font-semibold text-gray-900 mb-2">Booking Details:</h3>
@@ -208,7 +209,7 @@ export default function BookingFormWithDatabase({ service, couponCode, onBack }:
             </div>
           </div>
           <div className="bg-blue-100 text-brand-blue rounded-full p-2">
-            <IconComponent className="w-6 h-6" />
+            <Image src={service.iconPath} alt={service.name} width={24} height={24} className="w-6 h-6" />
           </div>
         </div>
       </div>

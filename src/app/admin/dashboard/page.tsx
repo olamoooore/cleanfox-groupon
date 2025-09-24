@@ -1,15 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase, dbOperations, FormSubmission } from '@/lib/supabase'
 import { User } from '@supabase/supabase-js'
 import { 
   Calendar, 
-  Users, 
   CheckCircle, 
   Clock, 
-  XCircle, 
   LogOut, 
   Settings,
   Home,
@@ -20,7 +18,6 @@ import {
   Download,
   TrendingUp,
   DollarSign,
-  Star,
   Activity,
   Image,
   Eye,
@@ -53,10 +50,30 @@ export default function AdminDashboard() {
   const [imagePreview, setImagePreview] = useState<{show: boolean, images: string[], currentIndex: number, title: string}>({show: false, images: [], currentIndex: 0, title: ''})
   const router = useRouter()
 
+  const checkUser = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      router.push('/admin')
+      return
+    }
+    setUser(user)
+  }, [router])
+
+  const fetchSubmissions = useCallback(async () => {
+    try {
+      const data = await dbOperations.getFormSubmissions()
+      setSubmissions(data)
+    } catch (error) {
+      console.error('Error fetching submissions:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     checkUser()
     fetchSubmissions()
-  }, [])
+  }, [checkUser, fetchSubmissions])
 
   useEffect(() => {
     const filtered = submissions.filter(submission => {
@@ -71,26 +88,6 @@ export default function AdminDashboard() {
     })
     setFilteredSubmissions(filtered)
   }, [submissions, searchTerm, statusFilter])
-
-  const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      router.push('/admin')
-      return
-    }
-    setUser(user)
-  }
-
-  const fetchSubmissions = async () => {
-    try {
-      const data = await dbOperations.getFormSubmissions()
-      setSubmissions(data)
-    } catch (error) {
-      console.error('Error fetching submissions:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const updateStatus = async (id: string, status: FormSubmission['status']) => {
     try {
