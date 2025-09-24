@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase, dbOperations, FormSubmission } from '@/lib/supabase'
+import { supabase, dbOperations, FormSubmission, isSupabaseConfigured } from '@/lib/supabase'
 import { User } from '@supabase/supabase-js'
 import { 
   Calendar, 
@@ -51,6 +51,12 @@ export default function AdminDashboard() {
   const router = useRouter()
 
   const checkUser = useCallback(async () => {
+    if (!supabase || !isSupabaseConfigured()) {
+      // If Supabase is not configured, redirect to admin login
+      router.push('/admin')
+      return
+    }
+    
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       router.push('/admin')
@@ -240,7 +246,9 @@ export default function AdminDashboard() {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    if (supabase && isSupabaseConfigured()) {
+      await supabase.auth.signOut()
+    }
     router.push('/admin')
   }
 

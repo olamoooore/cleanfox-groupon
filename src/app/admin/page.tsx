@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { User } from '@supabase/supabase-js'
@@ -13,8 +13,16 @@ export default function AdminLogin() {
   const router = useRouter()
 
   useEffect(() => {
+    // Check if Supabase is configured
+    if (!supabase || !isSupabaseConfigured()) {
+      setLoading(false)
+      return
+    }
+
     // Check if user is already logged in
     const getUser = async () => {
+      if (!supabase) return
+      
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
       setLoading(false)
@@ -102,9 +110,10 @@ export default function AdminLogin() {
         <div className="glass-card py-10 px-8 shadow-2xl rounded-2xl border border-white/30 bg-black/30 hover:bg-black/40 transition-all duration-300">
           <div className="space-y-6 auth-container">
             <div style={{ background: 'transparent', backgroundColor: 'transparent' }}>
-              <Auth
-              supabaseClient={supabase}
-              appearance={{
+              {supabase && isSupabaseConfigured() ? (
+                <Auth
+                supabaseClient={supabase}
+                appearance={{
                 theme: ThemeSupa,
                 variables: {
                   default: {
@@ -174,6 +183,24 @@ export default function AdminLogin() {
               providers={[]}
               redirectTo="/admin/dashboard"
             />
+              ) : (
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 bg-red-500/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-2">Admin Panel Not Available</h3>
+                  <p className="text-white/70 text-sm">
+                    The admin panel requires Supabase configuration. Please set up your environment variables to access this feature.
+                  </p>
+                  <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                    <p className="text-yellow-400 text-xs">
+                      Contact your administrator to configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

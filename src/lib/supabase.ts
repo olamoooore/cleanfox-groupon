@@ -1,9 +1,17 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Create Supabase client only if environment variables are available
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null
+
+// Helper function to check if Supabase is configured
+export const isSupabaseConfigured = (): boolean => {
+  return !!(supabaseUrl && supabaseAnonKey)
+}
 
 // Database types for TypeScript
 export interface FormSubmission {
@@ -42,6 +50,11 @@ export interface AdminUser {
 export const dbOperations = {
   // Form submissions
   getFormSubmissions: async (): Promise<FormSubmission[]> => {
+    if (!supabase) {
+      console.warn('Supabase not configured, returning empty array')
+      return []
+    }
+    
     const { data, error } = await supabase
       .from('form_submissions')
       .select('*')
@@ -52,6 +65,11 @@ export const dbOperations = {
   },
   
   updateSubmissionStatus: async (id: string, status: FormSubmission['status']) => {
+    if (!supabase) {
+      console.warn('Supabase not configured, cannot update submission status')
+      return false
+    }
+    
     const { error } = await supabase
       .from('form_submissions')
       .update({ status })
@@ -62,6 +80,11 @@ export const dbOperations = {
   },
   
   deleteSubmission: async (id: string) => {
+    if (!supabase) {
+      console.warn('Supabase not configured, cannot delete submission')
+      return false
+    }
+    
     const { error } = await supabase
       .from('form_submissions')
       .delete()
@@ -72,6 +95,11 @@ export const dbOperations = {
   },
   
   updateSubmission: async (id: string, data: Partial<FormSubmission>) => {
+    if (!supabase) {
+      console.warn('Supabase not configured, cannot update submission')
+      return false
+    }
+    
     const { error } = await supabase
       .from('form_submissions')
       .update(data)
@@ -83,6 +111,18 @@ export const dbOperations = {
 
   // Analytics
   async getSubmissionStats() {
+    if (!supabase) {
+      console.warn('Supabase not configured, returning default stats')
+      return {
+        total: 0,
+        pending: 0,
+        confirmed: 0,
+        completed: 0,
+        cancelled: 0,
+        thisMonth: 0
+      }
+    }
+    
     const { data, error } = await supabase
       .from('form_submissions')
       .select('status, created_at')

@@ -6,7 +6,7 @@ import ServiceSelector, { type Service } from '@/components/ServiceSelector';
 import ManualRedemptionForm, { type ManualRedemptionData } from '@/components/ManualRedemptionForm';
 import BookingKoalaIframe from '@/components/BookingKoalaIframe';
 import { logConfigurationStatus } from '@/lib/config-check';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 type AppStep = 'service-selection' | 'manual-form' | 'booking' | 'submitted';
 
@@ -29,6 +29,12 @@ export default function Home() {
 
   // Function to upload image to Supabase storage
   const uploadImageToSupabase = async (file: File, folder: string): Promise<string> => {
+    if (!supabase || !isSupabaseConfigured()) {
+      // If Supabase is not configured, return a placeholder URL or handle differently
+      console.warn('Supabase not configured, cannot upload image');
+      return URL.createObjectURL(file); // Return blob URL for local preview
+    }
+
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
     const filePath = `${folder}/${fileName}`;
@@ -75,33 +81,37 @@ export default function Home() {
         }
       }
 
-      // Save form data to database
-      const { error } = await supabase
-        .from('form_submissions')
-        .insert([
-          {
-            customer_name: data.name,
-            customer_email: data.email,
-            customer_phone: data.phone,
-            service_type: selectedService?.name || 'Unknown',
-            service_title: selectedService?.name || 'Unknown Service',
-            address_line1: `ZIP: ${data.zipCode}`, // Using ZIP code as address since that's what we collect
-            city: 'Unknown', // We don't collect city in manual form
-            state: 'Unknown', // We don't collect state in manual form
-            zip_code: data.zipCode,
-            preferred_date: data.date,
-            preferred_time: data.timeWindow,
-            coupon_code: data.voucherCode,
-            special_instructions: `Vehicle: ${data.carYear} ${data.carMake} ${data.carModel} (${data.vehicleClass})`,
-            property_images: voucherImageUrls.length > 0 ? voucherImageUrls : null, // Store voucher images as property images
-            vehicle_images: vehicleImageUrls.length > 0 ? vehicleImageUrls : null, // Store vehicle images separately
-            status: 'pending'
-          }
-        ]);
+      // Save form data to database (only if Supabase is configured)
+      if (supabase && isSupabaseConfigured()) {
+        const { error } = await supabase
+          .from('form_submissions')
+          .insert([
+            {
+              customer_name: data.name,
+              customer_email: data.email,
+              customer_phone: data.phone,
+              service_type: selectedService?.name || 'Unknown',
+              service_title: selectedService?.name || 'Unknown Service',
+              address_line1: `ZIP: ${data.zipCode}`, // Using ZIP code as address since that's what we collect
+              city: 'Unknown', // We don't collect city in manual form
+              state: 'Unknown', // We don't collect state in manual form
+              zip_code: data.zipCode,
+              preferred_date: data.date,
+              preferred_time: data.timeWindow,
+              coupon_code: data.voucherCode,
+              special_instructions: `Vehicle: ${data.carYear} ${data.carMake} ${data.carModel} (${data.vehicleClass})`,
+              property_images: voucherImageUrls.length > 0 ? voucherImageUrls : null, // Store voucher images as property images
+              vehicle_images: vehicleImageUrls.length > 0 ? vehicleImageUrls : null, // Store vehicle images separately
+              status: 'pending'
+            }
+          ]);
 
-      if (error) {
-        console.error('Error saving to database:', error);
-        // Continue to booking step even if database save fails
+        if (error) {
+          console.error('Error saving to database:', error);
+          // Continue to booking step even if database save fails
+        }
+      } else {
+        console.log('Supabase not configured - skipping database save');
       }
 
       setSubmission(data);

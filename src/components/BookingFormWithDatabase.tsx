@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Calendar, CheckCircle, User, MapPin, Clock, MessageSquare, Camera, Upload, X } from 'lucide-react';
 import type { Service } from './ServiceSelector';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 interface BookingFormProps {
   service: Service;
@@ -77,6 +77,11 @@ export default function BookingFormWithDatabase({ service, couponCode, onBack }:
   };
 
   const uploadImageToSupabase = async (file: File, folder: string): Promise<string> => {
+    if (!supabase || !isSupabaseConfigured()) {
+      // Return a local preview URL when Supabase is not configured
+      return URL.createObjectURL(file);
+    }
+
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
     const filePath = `${folder}/${fileName}`;
@@ -121,31 +126,35 @@ export default function BookingFormWithDatabase({ service, couponCode, onBack }:
         vehicleImageUrls.push(url);
       }
 
-      // Save to Supabase
-      const { data, error } = await supabase
-        .from('form_submissions')
-        .insert([
-          {
-            customer_name: formData.name,
-            customer_email: formData.email,
-            customer_phone: formData.phone,
-            service_type: service.name,
-            address_line1: formData.address,
-            city: formData.city,
-            state: formData.state,
-            zip_code: formData.zipCode,
-            preferred_date: formData.preferredDate,
-            preferred_time: formData.preferredTime,
-            special_instructions: formData.specialInstructions,
-            coupon_code: couponCode,
-            property_images: propertyImageUrls,
-            vehicle_images: vehicleImageUrls.length > 0 ? vehicleImageUrls : null,
-            status: 'pending'
-          }
-        ])
-        .select();
+      // Save to Supabase (only if configured)
+      if (supabase && isSupabaseConfigured()) {
+        const { data, error } = await supabase
+          .from('form_submissions')
+          .insert([
+            {
+              customer_name: formData.name,
+              customer_email: formData.email,
+              customer_phone: formData.phone,
+              service_type: service.name,
+              address_line1: formData.address,
+              city: formData.city,
+              state: formData.state,
+              zip_code: formData.zipCode,
+              preferred_date: formData.preferredDate,
+              preferred_time: formData.preferredTime,
+              special_instructions: formData.specialInstructions,
+              coupon_code: couponCode,
+              property_images: propertyImageUrls,
+              vehicle_images: vehicleImageUrls.length > 0 ? vehicleImageUrls : null,
+              status: 'pending'
+            }
+          ])
+          .select();
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        console.log('Supabase not configured - skipping database save');
+      }
 
       setIsSubmitted(true);
     } catch (err) {
