@@ -4,7 +4,7 @@ export type VehicleClass = 'sedan' | 'suv' | 'truck' | 'van';
 
 export interface ManualRedemptionData {
   voucherCode: string;
-  voucherFile?: File | null;
+  voucherFile: File | null;
   zipCode: string;
   date: string;
   timeWindow: string;
@@ -15,11 +15,11 @@ export interface ManualRedemptionData {
   carMake: string;
   carModel: string;
   carYear: string;
-  photoFile?: File | null;
+  vehicleImages: File[];
 }
 
 interface ManualRedemptionFormProps {
-  onSubmit: (data: ManualRedemptionData) => void;
+  onSubmit: (data: ManualRedemptionData) => void | Promise<void>;
   onBack: () => void;
   defaultVehicleClass?: VehicleClass;
 }
@@ -49,11 +49,11 @@ export default function ManualRedemptionForm({ onSubmit, onBack, defaultVehicleC
     carMake: '',
     carModel: '',
     carYear: '',
-    photoFile: null,
+    vehicleImages: [],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const voucherInputRef = useRef<HTMLInputElement | null>(null);
-  const photoInputRef = useRef<HTMLInputElement | null>(null);
+  const vehicleImagesInputRef = useRef<HTMLInputElement | null>(null);
 
   // Shared input styles to ensure good contrast for typed text
   const inputBase = 'w-full px-3 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/10 text-white placeholder-white/60';
@@ -64,6 +64,7 @@ export default function ManualRedemptionForm({ onSubmit, onBack, defaultVehicleC
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!form.voucherCode.trim()) newErrors.voucherCode = 'Voucher code is required';
+    if (!form.voucherFile) newErrors.voucherFile = 'Voucher file is required';
     if (!form.zipCode.trim()) newErrors.zipCode = 'Zip code is required';
     if (!/^[0-9]{5}(-[0-9]{4})?$/.test(form.zipCode.trim())) newErrors.zipCode = 'Enter a valid US ZIP code';
     if (!form.date) newErrors.date = 'Date is required';
@@ -88,10 +89,10 @@ export default function ManualRedemptionForm({ onSubmit, onBack, defaultVehicleC
     if (errors[field as string]) setErrors(prev => ({ ...prev, [field]: '' }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    onSubmit(form);
+    await onSubmit(form);
   };
 
   return (
@@ -119,14 +120,15 @@ export default function ManualRedemptionForm({ onSubmit, onBack, defaultVehicleC
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/90 mb-2">Upload Voucher (optional)</label>
+              <label className="block text-sm font-medium text-white/90 mb-2">Upload Voucher<span className="text-red-400">*</span></label>
               <div className="flex items-center">
                 <input ref={voucherInputRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => handleChange('voucherFile', e.target.files?.[0] || null)} />
-                <button type="button" onClick={() => voucherInputRef.current?.click()} className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 border border-white/20 rounded-lg text-white/90 hover:bg-white/10 transition-all duration-200">
+                <button type="button" onClick={() => voucherInputRef.current?.click()} className={`w-full inline-flex items-center justify-center gap-2 px-4 py-3 border rounded-lg text-white/90 hover:bg-white/10 transition-all duration-200 ${errors.voucherFile ? 'border-red-400' : 'border-white/20'}`}>
                   <Upload className="w-4 h-4" /> Upload
                 </button>
               </div>
               {form.voucherFile && <p className="text-xs text-white/70 mt-1 truncate">Selected: {form.voucherFile.name}</p>}
+              {errors.voucherFile && <p className="text-sm text-red-400 mt-1">{errors.voucherFile}</p>}
             </div>
           </div>
 
@@ -284,16 +286,71 @@ export default function ManualRedemptionForm({ onSubmit, onBack, defaultVehicleC
             </div>
           </div>
 
-          {/* Photo Upload */}
+          {/* Vehicle Images Upload */}
           <div>
-            <label className="block text-sm font-medium text-white/90 mb-2">Photo upload (optional)</label>
+            <label className="block text-sm font-medium text-white/90 mb-2">Vehicle Photo Upload (optional) - Up to 5 images</label>
             <div className="flex items-center">
-              <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleChange('photoFile', e.target.files?.[0] || null)} />
-              <button type="button" onClick={() => photoInputRef.current?.click()} className="inline-flex items-center justify-center gap-2 px-4 py-3 border border-white/20 rounded-lg text-white/90 hover:bg-white/10 transition-all duration-200">
-                <Upload className="w-4 h-4" /> Upload Photo
+              <input 
+                ref={vehicleImagesInputRef} 
+                type="file" 
+                accept="image/*" 
+                multiple 
+                className="hidden" 
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  if (files.length > 5) {
+                    alert('You can upload a maximum of 5 images');
+                    return;
+                  }
+                  handleChange('vehicleImages', [...form.vehicleImages, ...files].slice(0, 5));
+                }} 
+              />
+              <button 
+                type="button" 
+                onClick={() => vehicleImagesInputRef.current?.click()} 
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 border border-white/20 rounded-lg text-white/90 hover:bg-white/10 transition-all duration-200"
+                disabled={form.vehicleImages.length >= 5}
+              >
+                <Upload className="w-4 h-4" /> Upload Vehicle Photos
               </button>
             </div>
-            {form.photoFile && <p className="text-xs text-white/70 mt-1 truncate">Selected: {form.photoFile.name}</p>}
+            {form.vehicleImages.length > 0 && (
+              <div className="mt-3">
+                <p className="text-xs text-white/70 mb-2">Selected {form.vehicleImages.length} image(s):</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                  {form.vehicleImages.map((file, index) => (
+                    <div key={index} className="relative group">
+                      <div className="aspect-square bg-white/5 rounded-lg overflow-hidden border border-white/20">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`Vehicle image ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onLoad={(e) => {
+                            // Clean up the object URL after the image loads to prevent memory leaks
+                            const img = e.target as HTMLImageElement;
+                            setTimeout(() => URL.revokeObjectURL(img.src), 1000);
+                          }}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newImages = form.vehicleImages.filter((_, i) => i !== index);
+                          handleChange('vehicleImages', newImages);
+                        }}
+                        className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                        title="Remove image"
+                      >
+                        ×
+                      </button>
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 rounded-b-lg truncate opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        {file.name}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Actions */}

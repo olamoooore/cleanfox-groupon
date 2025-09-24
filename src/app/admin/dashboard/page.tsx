@@ -27,7 +27,12 @@ import {
   Edit,
   Trash2,
   Save,
-  X
+  X,
+  User as UserIcon,
+  MapPin,
+  MessageSquare,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 import ConfirmModal from '@/components/ConfirmModal'
 import SuccessModal from '@/components/SuccessModal'
@@ -44,6 +49,8 @@ export default function AdminDashboard() {
   const [editFormData, setEditFormData] = useState<Partial<FormSubmission>>({})
   const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null)
   const [showSuccessModal, setShowSuccessModal] = useState<{show: boolean, title: string, message: string}>({show: false, title: '', message: ''})
+  const [viewingSubmission, setViewingSubmission] = useState<FormSubmission | null>(null)
+  const [imagePreview, setImagePreview] = useState<{show: boolean, images: string[], currentIndex: number, title: string}>({show: false, images: [], currentIndex: 0, title: ''})
   const router = useRouter()
 
   useEffect(() => {
@@ -160,6 +167,37 @@ export default function AdminDashboard() {
   const handleCancelEdit = () => {
     setEditingSubmission(null)
     setEditFormData({})
+  }
+
+  const handleViewSubmission = (submission: FormSubmission) => {
+    setViewingSubmission(submission)
+  }
+
+  const openImagePreview = (images: string[], startIndex: number, title: string) => {
+    setImagePreview({
+      show: true,
+      images,
+      currentIndex: startIndex,
+      title
+    })
+  }
+
+  const closeImagePreview = () => {
+    setImagePreview({show: false, images: [], currentIndex: 0, title: ''})
+  }
+
+  const nextImage = () => {
+    setImagePreview(prev => ({
+      ...prev,
+      currentIndex: (prev.currentIndex + 1) % prev.images.length
+    }))
+  }
+
+  const prevImage = () => {
+    setImagePreview(prev => ({
+      ...prev,
+      currentIndex: prev.currentIndex === 0 ? prev.images.length - 1 : prev.currentIndex - 1
+    }))
   }
 
   const handleExport = () => {
@@ -657,6 +695,13 @@ export default function AdminDashboard() {
                             ) : (
                               <>
                                 <button 
+                                  onClick={() => handleViewSubmission(submission)}
+                                  className="p-1 bg-green-100 text-green-600 rounded hover:bg-green-200"
+                                  title="View submission details"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                                <button 
                                   onClick={() => handleEdit(submission)}
                                   className="p-1 bg-orange-100 text-orange-600 rounded hover:bg-orange-200"
                                   title="Edit submission"
@@ -723,6 +768,292 @@ export default function AdminDashboard() {
         title={showSuccessModal.title}
         message={showSuccessModal.message}
       />
+
+      {/* View Submission Modal */}
+      {viewingSubmission && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-4xl max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
+              <h2 className="text-2xl font-bold text-gray-800">Submission Details</h2>
+              <button
+                onClick={() => setViewingSubmission(null)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-500" />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Customer Information */}
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center">
+                   <UserIcon className="w-5 h-5 mr-2" />
+                   Customer Information
+                 </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Name</label>
+                    <p className="text-gray-800">{viewingSubmission.customer_name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Email</label>
+                    <p className="text-gray-800">{viewingSubmission.customer_email}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Phone</label>
+                    <p className="text-gray-800">{viewingSubmission.customer_phone || 'Not provided'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Status</label>
+                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                      viewingSubmission.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                      viewingSubmission.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
+                      viewingSubmission.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {viewingSubmission.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Service Information */}
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-orange-800 mb-3 flex items-center">
+                  <Settings className="w-5 h-5 mr-2" />
+                  Service Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Service Type</label>
+                    <p className="text-gray-800">{viewingSubmission.service_type}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Service Title</label>
+                    <p className="text-gray-800">{viewingSubmission.service_title}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Coupon Code</label>
+                    <p className="text-gray-800">{viewingSubmission.coupon_code || 'None'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Preferred Date</label>
+                    <p className="text-gray-800">{viewingSubmission.preferred_date || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Preferred Time</label>
+                    <p className="text-gray-800">{viewingSubmission.preferred_time || 'Not specified'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Address Information */}
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-green-800 mb-3 flex items-center">
+                  <MapPin className="w-5 h-5 mr-2" />
+                  Address Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Address Line 1</label>
+                    <p className="text-gray-800">{viewingSubmission.address_line1}</p>
+                  </div>
+                  {viewingSubmission.address_line2 && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Address Line 2</label>
+                      <p className="text-gray-800">{viewingSubmission.address_line2}</p>
+                    </div>
+                  )}
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">City</label>
+                    <p className="text-gray-800">{viewingSubmission.city}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">State</label>
+                    <p className="text-gray-800">{viewingSubmission.state}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">ZIP Code</label>
+                    <p className="text-gray-800">{viewingSubmission.zip_code}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Special Instructions */}
+              {viewingSubmission.special_instructions && (
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold text-purple-800 mb-3 flex items-center">
+                    <MessageSquare className="w-5 h-5 mr-2" />
+                    Special Instructions
+                  </h3>
+                  <p className="text-gray-800 whitespace-pre-wrap">{viewingSubmission.special_instructions}</p>
+                </div>
+              )}
+
+              {/* Images */}
+              {((viewingSubmission.property_images && viewingSubmission.property_images.length > 0) || 
+                (viewingSubmission.vehicle_images && viewingSubmission.vehicle_images.length > 0)) && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                    <Image className="w-5 h-5 mr-2" />
+                    Images
+                  </h3>
+                  
+                  {viewingSubmission.property_images && viewingSubmission.property_images.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="text-md font-medium text-gray-700 mb-2">Voucher Images</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {viewingSubmission.property_images.map((url, index) => {
+                          console.log('Rendering property image:', url);
+                          return (
+                          <div key={index} className="relative group">
+                            <img 
+                              src={url} 
+                              alt={`Voucher ${index + 1}`} 
+                              className="w-full h-32 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                              onClick={() => openImagePreview(viewingSubmission.property_images!, index, 'Voucher Images')}
+                              onLoad={() => {
+                                console.log('Successfully loaded image:', url);
+                              }}
+                              onError={(e) => {
+                                console.error('Failed to load image:', url);
+                                console.error('Error details:', e);
+                                // Show a placeholder instead of hiding
+                                e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIEZhaWxlZCB0byBMb2FkPC90ZXh0Pjwvc3ZnPg==';
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-lg flex items-center justify-center">
+                              <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                          </div>
+                        );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {viewingSubmission.vehicle_images && viewingSubmission.vehicle_images.length > 0 && (
+                    <div>
+                      <h4 className="text-md font-medium text-gray-700 mb-2">Vehicle Images</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {viewingSubmission.vehicle_images.map((url, index) => {
+                          console.log('Rendering vehicle image:', url);
+                          return (
+                          <div key={index} className="relative group">
+                            <img 
+                              src={url} 
+                              alt={`Vehicle ${index + 1}`} 
+                              className="w-full h-32 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                              onClick={() => openImagePreview(viewingSubmission.vehicle_images!, index, 'Vehicle Images')}
+                              onLoad={() => {
+                                console.log('Successfully loaded vehicle image:', url);
+                              }}
+                              onError={(e) => {
+                                console.error('Failed to load vehicle image:', url);
+                                console.error('Error details:', e);
+                                // Show a placeholder instead of hiding
+                                e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIEZhaWxlZCB0byBMb2FkPC90ZXh0Pjwvc3ZnPg==';
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-lg flex items-center justify-center">
+                              <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                          </div>
+                        );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Admin Notes */}
+              {viewingSubmission.admin_notes && (
+                <div className="bg-yellow-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold text-yellow-800 mb-3 flex items-center">
+                    <FileText className="w-5 h-5 mr-2" />
+                    Admin Notes
+                  </h3>
+                  <p className="text-gray-800 whitespace-pre-wrap">{viewingSubmission.admin_notes}</p>
+                </div>
+              )}
+
+              {/* Timestamps */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                  <Clock className="w-5 h-5 mr-2" />
+                  Timestamps
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Created At</label>
+                    <p className="text-gray-800">{new Date(viewingSubmission.created_at).toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Updated At</label>
+                    <p className="text-gray-800">{new Date(viewingSubmission.updated_at).toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Preview Modal */}
+      {imagePreview.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="relative max-w-4xl max-h-full p-4">
+            {/* Close Button */}
+            <button
+              onClick={closeImagePreview}
+              className="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
+            >
+              <X className="w-8 h-8" />
+            </button>
+
+            {/* Image Title */}
+            <div className="absolute top-4 left-4 text-white z-10">
+              <h3 className="text-lg font-semibold">{imagePreview.title}</h3>
+              <p className="text-sm text-gray-300">
+                {imagePreview.currentIndex + 1} of {imagePreview.images.length}
+              </p>
+            </div>
+
+            {/* Navigation Buttons */}
+            {imagePreview.images.length > 1 && (
+              <>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10"
+                >
+                  <ChevronLeft className="w-8 h-8" />
+                </button>
+                <button
+                  onClick={nextImage}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10"
+                >
+                  <ChevronRight className="w-8 h-8" />
+                </button>
+              </>
+            )}
+
+            {/* Image */}
+            <img
+              src={imagePreview.images[imagePreview.currentIndex]}
+              alt={`${imagePreview.title} ${imagePreview.currentIndex + 1}`}
+              className="max-w-full max-h-full object-contain"
+              onLoad={() => {
+                console.log('Successfully loaded preview image:', imagePreview.images[imagePreview.currentIndex]);
+              }}
+              onError={(e) => {
+                console.error('Failed to load preview image:', imagePreview.images[imagePreview.currentIndex]);
+                console.error('Preview image error details:', e);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
