@@ -3,13 +3,29 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #F97316;
+  --secondary: #06B6D4;
+  --primary-light: #FB923C;
+  --primary-dark: #EA580C;
+  --secondary-light: #22D3EE;
+  --secondary-dark: #0891B2;
+  --gradient-primary: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
+  --gradient-secondary: linear-gradient(135deg, #06B6D4 0%, #22D3EE 100%);
+  --gradient-mixed: linear-gradient(135deg, #F97316 0%, #06B6D4 100%);
+  --gradient-mixed-reverse: linear-gradient(135deg, #06B6D4 0%, #F97316 100%);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-secondary-light: var(--secondary-light);
+  --color-secondary-dark: var(--secondary-dark);
+  --font-sans: var(--font-open-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-open-sans), monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +38,144 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-open-sans), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 400;
+}
+
+/* Custom gradient utilities */
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.gradient-secondary {
+  background: var(--gradient-secondary);
+}
+
+.gradient-mixed {
+  background: var(--gradient-mixed);
+}
+
+.gradient-mixed-reverse {
+  background: var(--gradient-mixed-reverse);
+}
+
+/* Glassmorphism utilities */
+.glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-primary {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.glass-secondary {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+/* Supabase Auth component overrides for glassmorphism */
+.supabase-auth-ui_ui {
+  background: transparent !important;
+}
+
+.supabase-auth-ui_ui form {
+  background: transparent !important;
+}
+
+.supabase-auth-ui_ui .supabase-auth-ui_ui-container {
+  background: transparent !important;
+}
+
+.supabase-auth-ui_ui .supabase-auth-ui_ui-divider {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Override any white backgrounds in auth components */
+[data-supabase] {
+  background: transparent !important;
+}
+
+[data-supabase] > div {
+  background: transparent !important;
+}
+
+/* Auth container specific overrides */
+.auth-container {
+  background: transparent !important;
+}
+
+.auth-container * {
+  background: transparent !important;
+}
+
+.auth-container form {
+  background: transparent !important;
+}
+
+.auth-container .supabase-auth-ui_ui {
+  background: transparent !important;
+}
+
+/* More aggressive overrides for all possible Auth UI elements */
+.supabase-auth-ui_ui,
+.supabase-auth-ui_ui *,
+.supabase-auth-ui_ui form,
+.supabase-auth-ui_ui div,
+.supabase-auth-ui_ui .supabase-auth-ui_ui-container,
+.supabase-auth-ui_ui .supabase-auth-ui_ui-card,
+.supabase-auth-ui_ui .supabase-auth-ui_ui-form,
+.supabase-auth-ui_ui .supabase-auth-ui_ui-panel,
+.supabase-auth-ui_ui .supabase-auth-ui_ui-content,
+.supabase-auth-ui_ui .supabase-auth-ui_ui-wrapper {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Target any remaining white backgrounds */
+.auth-container div[style*="background"],
+.auth-container div[style*="background-color"] {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Auth component overrides for glassmorphism */
+.auth-container {
+  --supabase-auth-background: transparent !important;
+}
+
+/* Target Supabase Auth UI components */
+.auth-container div[data-supabase],
+.auth-container div[data-supabase] > div,
+.auth-container div[data-supabase] form,
+.auth-container div[data-supabase] form > div {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Override any white backgrounds */
+.auth-container [style*="background: white"],
+.auth-container [style*="background-color: white"],
+.auth-container [style*="background: rgb(255, 255, 255)"],
+.auth-container [style*="background-color: rgb(255, 255, 255)"] {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Override the dark background from bg-gray-50 */
+.min-h-screen.bg-gray-50,
+div[class*="min-h-screen"][class*="bg-gray-50"],
+.supabase-auth-ui_ui-container,
+.supabase-auth-ui_ui-container > div,
+.supabase-auth-ui_ui-container > div > div,
+.auth-container > div > div {
+  background-color: transparent !important;
+  background: transparent !important;
 }
