@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Ticket, AlertCircle, CheckCircle } from 'lucide-react';
 import type { Service } from './ServiceSelector';
 import { validateCoupon } from '@/lib/groupon';
@@ -41,14 +42,14 @@ export default function CouponForm({ service, onCouponValidated, onBack }: Coupo
       } else {
         setError(result.error || 'Invalid coupon code. Please check your code and try again.');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to validate coupon. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const IconComponent = service.icon;
+  // Service icon will be displayed using service.iconPath
 
   if (isValid) {
     return (
@@ -78,7 +79,7 @@ export default function CouponForm({ service, onCouponValidated, onBack }: Coupo
         <div className="text-center mb-6">
           <div className="flex justify-center mb-4">
             <div className="bg-blue-100 text-brand-blue rounded-full p-3">
-              <IconComponent className="w-8 h-8" />
+              <Image src={service.iconPath} alt={service.name} width={32} height={32} className="w-8 h-8" />
             </div>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -150,7 +151,7 @@ export default function CouponForm({ service, onCouponValidated, onBack }: Coupo
         {/* Help Text */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
           <p className="text-sm text-gray-600 text-center">
-            <strong>Demo:</strong> Use a coupon code starting with "CLEAN" (e.g., "CLEAN123456") to test the validation.
+            <strong>Demo:</strong> Use a coupon code starting with &quot;CLEAN&quot; (e.g., &quot;CLEAN123456&quot;) to test the validation.
           </p>
         </div>
       </div>

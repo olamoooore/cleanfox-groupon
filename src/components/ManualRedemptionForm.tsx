@@ -59,7 +59,7 @@ export default function ManualRedemptionForm({ onSubmit, onBack, defaultVehicleC
   const inputBase = 'w-full px-3 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/10 text-white placeholder-white/60';
   const inputWithIconBase = 'w-full pl-10 pr-3 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/10 text-white placeholder-white/60';
   const selectWithIconBase = 'w-full pl-10 pr-3 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/10 text-white';
-  const selectBase = 'w-full px-3 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/10 text-white';
+
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -84,7 +84,7 @@ export default function ManualRedemptionForm({ onSubmit, onBack, defaultVehicleC
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (field: keyof ManualRedemptionData, value: any) => {
+  const handleChange = (field: keyof ManualRedemptionData, value: string | File | File[] | null) => {
     setForm(prev => ({ ...prev, [field]: value }));
     if (errors[field as string]) setErrors(prev => ({ ...prev, [field]: '' }));
   };
@@ -99,7 +99,7 @@ export default function ManualRedemptionForm({ onSubmit, onBack, defaultVehicleC
     <div className="w-full max-w-3xl mx-auto">
       <div className="glass-card rounded-xl shadow-lg border border-white/20 p-6 sm:p-8">
         <h2 className="text-2xl font-bold text-white mb-1 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Manual Groupon Redemption</h2>
-        <p className="text-white/80 mb-6">Fill in the details below and we'll redeem your voucher manually.</p>
+        <p className="text-white/80 mb-6">Fill in the details below and we&apos;ll redeem your voucher manually.</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Voucher */}
@@ -321,6 +321,7 @@ export default function ManualRedemptionForm({ onSubmit, onBack, defaultVehicleC
                   {form.vehicleImages.map((file, index) => (
                     <div key={index} className="relative group">
                       <div className="aspect-square bg-white/5 rounded-lg overflow-hidden border border-white/20">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={URL.createObjectURL(file)}
                           alt={`Vehicle image ${index + 1}`}

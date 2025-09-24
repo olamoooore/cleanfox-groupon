@@ -50,7 +50,7 @@ export default function BookingKoalaIframe({ serviceId, className = '' }: Bookin
         <h3 className="text-xl font-semibold text-gray-800 mb-4">Booking Form Coming Soon</h3>
         <p className="text-gray-600 mb-6">
           The booking form for {serviceId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} will be available soon. 
-          We'll contact you directly to schedule your appointment.
+          We&apos;ll contact you directly to schedule your appointment.
         </p>
       </div>
     );

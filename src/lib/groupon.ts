@@ -44,7 +44,7 @@ function validateApiConfig(): boolean {
 /**
  * Makes authenticated API call to Groupon
  */
-async function grouponApiCall(endpoint: string, options: RequestInit = {}): Promise<any> {
+async function grouponApiCall<T = unknown>(endpoint: string, options: RequestInit = {}): Promise<T> {
   if (!validateApiConfig()) {
     throw new Error('Groupon API not configured. Using demo mode.');
   }
@@ -70,6 +70,15 @@ async function grouponApiCall(endpoint: string, options: RequestInit = {}): Prom
   }
 
   return response.json();
+}
+
+interface GrouponApiResponse {
+  valid: boolean;
+  discount_amount?: number;
+  discount_type?: 'percentage' | 'fixed';
+  expiration_date?: string;
+  service_restrictions?: string[];
+  error_message?: string;
 }
 
 export interface CouponValidationResult {
@@ -98,7 +107,7 @@ export async function validateCoupon(
   if (hasApiConfig) {
     try {
       // Real Groupon API call
-      const response = await grouponApiCall('/vouchers/validate', {
+      const response = await grouponApiCall<GrouponApiResponse>('/vouchers/validate', {
         method: 'POST',
         body: JSON.stringify({
           voucher_code: couponCode,

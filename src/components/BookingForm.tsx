@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Calendar, CheckCircle } from 'lucide-react';
 import type { Service } from './ServiceSelector';
 import { getBookingKoalaUrl } from '@/lib/groupon';
@@ -11,7 +12,6 @@ interface BookingFormProps {
 }
 
 export default function BookingForm({ service, couponCode, onBack }: BookingFormProps) {
-  const IconComponent = service.icon;
   const bookingUrl = getBookingKoalaUrl(service.id, couponCode);
 
   return (
@@ -33,7 +33,7 @@ export default function BookingForm({ service, couponCode, onBack }: BookingForm
             </div>
           </div>
           <div className="bg-blue-100 text-brand-blue rounded-full p-2">
-            <IconComponent className="w-6 h-6" />
+            <Image src={service.iconPath} alt={service.name} width={24} height={24} className="w-6 h-6" />
           </div>
         </div>
       </div>
