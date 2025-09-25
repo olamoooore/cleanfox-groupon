@@ -12,11 +12,11 @@ export default function Header() {
             {/* Logo Container with Overlap */}
             <div className="relative z-10 bg-white rounded-lg shadow-lg border-2 border-brand-blue p-2 -mb-4 transform translate-y-2">
               <Image
-                src="/clean-fox-logo.png"
+                src="/clean-fox.gif"
                 alt="Clean Fox Logo"
-                width={60}
-                height={60}
-                className="w-12 h-12 sm:w-14 sm:h-14"
+                width={88}
+                height={88}
+                className="w-18 h-18 sm:w-22 sm:h-22"
                 priority
               />
             </div>

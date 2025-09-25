@@ -32,11 +32,15 @@ export default function BookingKoalaIframe({ serviceId, className = '' }: Bookin
       case 'mobile-detailing':
         return `${baseUrl}/car_wash?${params}`;
       case 'deep-move-cleaning':
-        return `${baseUrl}/house_cleaning?${params}`;
+        return `${baseUrl}/home_cleaning?${params}`;
+      case 'post-construction-cleaning':
+        return `${baseUrl}/post_construction?${params}`;
       case 'gutter-cleaning':
         return `${baseUrl}/gutter_cleaning?${params}`;
       case 'junk-removal':
-        return `${baseUrl}/junk_removal?${params}`;
+        return `${baseUrl}/junk-removal?${params}`;
+      case 'moving-services':
+        return `${baseUrl}/moving_service?${params}`;
       default:
         return null; // Return null for unsupported services
     }

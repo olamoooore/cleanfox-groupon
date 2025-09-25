@@ -14,37 +14,37 @@ const services: Service[] = [
     id: 'mobile-detailing',
     name: 'Mobile Detailing',
     description: 'Professional mobile car detailing at your location',
-    iconPath: '/images/icons/car-wash.png',
+    iconPath: '/images/services/mobile-cleaning.png?v=2024-updated',
   },
   {
     id: 'deep-move-cleaning',
-    name: 'Deep & Move in/out Cleaning',
+    name: 'Move in/out Cleaning',
     description: 'Comprehensive deep cleaning for moving in or out',
-    iconPath: '/images/icons/move-in move-out.png',
+    iconPath: '/images/services/move-in-house-cleaning.png',
   },
   {
     id: 'post-construction-cleaning',
     name: 'Post Construction Cleaning',
     description: 'Specialized cleaning after construction projects',
-    iconPath: '/images/icons/construction.png',
+    iconPath: '/images/services/post-construction.png',
   },
   {
     id: 'junk-removal',
     name: 'Junk Removal',
     description: 'Professional junk and debris removal services',
-    iconPath: '/images/icons/junk-removal.png',
+    iconPath: '/images/services/junk-removal.png',
   },
   {
     id: 'gutter-cleaning',
     name: 'Gutter Cleaning',
     description: 'Professional gutter cleaning and maintenance',
-    iconPath: '/images/icons/gutter.png',
+    iconPath: '/images/services/gutter-cleaning.png',
   },
   {
     id: 'moving-services',
     name: 'Moving Services',
     description: 'Complete moving and relocation assistance',
-    iconPath: '/images/icons/moving-truck.png',
+    iconPath: '/images/services/moving.png',
   },
 ];
 
@@ -55,8 +55,8 @@ interface ServiceSelectorProps {
 
 export default function ServiceSelector({ onServiceSelect, selectedService }: ServiceSelectorProps) {
   return (
-    <div className="w-full max-w-5xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="w-full max-w-7xl mx-auto px-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
         {services.map((service) => {
           const isSelected = selectedService?.id === service.id;
           
@@ -65,57 +65,112 @@ export default function ServiceSelector({ onServiceSelect, selectedService }: Se
               key={service.id}
               onClick={() => onServiceSelect(service)}
               className={`
-                group relative p-8 rounded-2xl border transition-all duration-300 text-left transform hover:-translate-y-1 backdrop-blur-sm
+                group relative overflow-hidden rounded-2xl text-left transform transition-all duration-700 ease-out
+                backdrop-blur-xl border border-white/10 bg-white/5
+                hover:scale-[1.02] hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10
+                hover:border-white/20 hover:bg-white/10
                 ${isSelected 
-                  ? 'border-primary/30 bg-gradient-to-br from-primary/20 to-secondary/20 shadow-xl scale-105 ring-2 ring-primary/30' 
-                  : 'border-white/20 bg-white/10 hover:border-primary/20 hover:shadow-lg hover:bg-white/20'
+                  ? 'scale-[1.02] -translate-y-1 shadow-2xl shadow-blue-500/20 border-blue-400/30 bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10 ring-1 ring-blue-400/20' 
+                  : ''
                 }
               `}
             >
-              <div className="flex flex-col items-center text-center">
-                <div className={`
-                  w-20 h-20 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 p-3 backdrop-blur-sm
-                  ${isSelected 
-                    ? 'bg-gradient-to-br from-primary to-secondary shadow-lg' 
-                    : 'bg-white/20 group-hover:bg-gradient-to-br group-hover:from-primary/30 group-hover:to-secondary/30'
-                  }
-                `}>
-                  <Image
-                    src={service.iconPath}
-                    alt={`${service.name} icon`}
-                    width={40}
-                    height={40}
-                    className="object-contain"
-                  />
+              {/* Animated Background Gradient */}
+              <div className={`
+                absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700
+                bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5
+                ${isSelected ? 'opacity-100' : ''}
+              `} />
+              
+              {/* Image Container */}
+              <div className="relative h-48 overflow-hidden rounded-t-2xl bg-gradient-to-br from-white/90 to-gray-50/90 group-hover:from-white group-hover:to-gray-50 transition-all duration-500">
+                <div className="relative w-full h-full p-4 flex items-center justify-center">
+                  <div className="relative w-full h-full group-hover:scale-110 transition-transform duration-500 ease-out">
+                    <Image
+                      src={service.iconPath}
+                      alt={service.name}
+                      fill
+                      className="object-contain drop-shadow-lg"
+                    />
+                  </div>
                 </div>
                 
+                {/* Image Overlay Effects */}
+                <div className={`
+                  absolute inset-0 transition-all duration-500
+                  ${isSelected 
+                    ? 'bg-gradient-to-t from-blue-500/10 via-transparent to-transparent' 
+                    : 'bg-gradient-to-t from-transparent via-transparent to-transparent group-hover:from-blue-500/5'
+                  }
+                `} />
+                
+                {/* Selected Indicator */}
+                {isSelected && (
+                  <div className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                )}
+                
+                {/* Hover Indicator */}
+                {!isSelected && (
+                  <div className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              
+              {/* Content Container */}
+              <div className="relative p-6 space-y-3">
                 <h3 className={`
-                  text-xl font-bold mb-3 transition-colors
-                  ${isSelected ? 'text-white' : 'text-white/90 group-hover:text-white'}
+                  text-xl font-bold tracking-tight transition-all duration-300
+                  ${isSelected 
+                    ? 'text-white' 
+                    : 'text-white/90 group-hover:text-white'
+                  }
                 `}>
                   {service.name}
                 </h3>
                 
                 <p className={`
-                  text-sm leading-relaxed transition-colors
-                  ${isSelected ? 'text-white/80' : 'text-white/70 group-hover:text-white/80'}
+                  text-sm leading-relaxed transition-all duration-300 font-medium
+                  ${isSelected 
+                    ? 'text-white/80' 
+                    : 'text-white/60 group-hover:text-white/75'
+                  }
                 `}>
                   {service.description}
                 </p>
+                
+                {/* Action Indicator */}
+                 {isSelected && (
+                   <div className="flex items-center space-x-2 pt-2 transition-all duration-300 text-blue-300">
+                     <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-lg shadow-blue-400/50 transition-all duration-300" />
+                     <span className="text-xs font-medium tracking-wide">Selected</span>
+                   </div>
+                 )}
               </div>
               
-              {isSelected && (
-                <div className="absolute top-4 right-4">
-                  <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
-                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                </div>
-              )}
+              {/* Bottom Accent */}
+              <div className={`
+                absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-500
+                ${isSelected 
+                  ? 'bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-100' 
+                  : 'bg-gradient-to-r from-blue-400/0 via-blue-400/50 to-blue-400/0 opacity-0 group-hover:opacity-100'
+                }
+              `} />
               
-              {/* Hover effect overlay */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              {/* Subtle Border Glow */}
+              <div className={`
+                absolute inset-0 rounded-2xl transition-all duration-500 pointer-events-none
+                ${isSelected 
+                  ? 'shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] ring-1 ring-white/10' 
+                  : 'group-hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]'
+                }
+              `} />
             </button>
           );
         })}

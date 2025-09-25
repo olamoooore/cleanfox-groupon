@@ -154,7 +154,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-8">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight">
-                Cleanfox Coupon Redeem
+                Clean fox Coupon Redeem
               </h1>
             </div>
           </div>
