@@ -1,12 +1,51 @@
+'use client';
+
 import Link from 'next/link';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Clock, Calendar } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function ThankYouPage() {
+  console.log('Thank you page is rendering');
+  const searchParams = useSearchParams();
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const [service, setService] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Get service from URL params or localStorage
+    const serviceFromParams = searchParams.get('service');
+    const serviceFromStorage = localStorage.getItem('selectedService');
+    const detectedService = serviceFromParams || serviceFromStorage;
+    setService(detectedService);
+  }, [searchParams]);
+
+  const isMobileDetailing = service === 'mobile-detailing';
+
+  useEffect(() => {
+    // Load BookingKoala embed script when booking form is shown
+    if (showBookingForm && isMobileDetailing) {
+      const script = document.createElement('script');
+      script.src = 'https://cleanfox.bookingkoala.com/resources/embed.js';
+      script.defer = true;
+      document.head.appendChild(script);
+
+      return () => {
+        // Cleanup script when component unmounts or form is hidden
+        const existingScript = document.querySelector('script[src="https://cleanfox.bookingkoala.com/resources/embed.js"]');
+        if (existingScript) {
+          document.head.removeChild(existingScript);
+        }
+      };
+    }
+  }, [showBookingForm, isMobileDetailing]);
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center">
         <div className="mb-6">
-          <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+          <div className="h-16 w-16 mx-auto mb-4 flex items-center justify-center">
+            <CheckCircle className="h-16 w-16 text-green-500" />
+          </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Thank You!
           </h1>
@@ -35,6 +74,50 @@ export default function ThankYouPage() {
           </ul>
         </div>
         
+        {/* Can't wait section for mobile detailing */}
+        {isMobileDetailing && !showBookingForm && (
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center mb-2">
+              <Clock className="h-5 w-5 text-orange-600 mr-2" />
+              <h3 className="text-lg font-semibold text-orange-800">Can't wait for our call?</h3>
+            </div>
+            <p className="text-orange-700 mb-3">
+              Book your mobile detailing appointment immediately using our direct booking system.
+            </p>
+            <button
+              onClick={() => setShowBookingForm(true)}
+              className="w-full bg-orange-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Book Now - Mobile Detailing
+            </button>
+          </div>
+        )}
+
+        {/* Embedded booking form for mobile detailing */}
+        {isMobileDetailing && showBookingForm && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-gray-800">Book Your Mobile Detailing</h3>
+              <button
+                onClick={() => setShowBookingForm(false)}
+                className="text-gray-500 hover:text-gray-700 text-sm"
+              >
+                ✕ Close
+              </button>
+            </div>
+            <div className="bg-gray-50 rounded-lg overflow-hidden">
+              <iframe 
+                src="https://cleanfox.bookingkoala.com/login?embed=true" 
+                style={{border: 'none', height: '650px'}} 
+                width="100%" 
+                scrolling="no"
+                title="Mobile Detailing Booking"
+              />
+            </div>
+          </div>
+        )}
+
         <div className="space-y-3">
           <Link 
             href="/"

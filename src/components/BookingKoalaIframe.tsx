@@ -43,11 +43,19 @@ export default function BookingKoalaIframe({ serviceId, className = '', onFormSu
             messageStr.includes('confirmation') ||
             messageStr.includes('booked')) {
           console.log('Form submission detected via message, redirecting to thank you page');
+          console.log('Current URL before redirect:', window.location.href);
           hasRedirected = true;
-          router.push('/thank-you');
-          if (onFormSubmit) {
-            onFormSubmit();
-          }
+          
+          // Add a small delay to ensure the message is processed
+          setTimeout(() => {
+            console.log('Executing redirect to /thank-you');
+            // Store service info for the thank you page
+            localStorage.setItem('selectedService', serviceId);
+            router.push(`/thank-you?service=${serviceId}`);
+            if (onFormSubmit) {
+              onFormSubmit();
+            }
+          }, 100);
         }
       }
     };
