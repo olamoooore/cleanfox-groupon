@@ -142,6 +142,11 @@ export default function BookingKoalaIframe({ serviceId, className = '', onFormSu
       return 'https://cleanfox.bookingkoala.com/leads/form/ef6945872c9f4e128575f7227b16b70d19a7f1e292f515707ff2179bd829a85d3d57b9e0e0ae6572aff79ebdbe6658e18072c2efb57f9285df979ef37bb69b87?embed=true';
     }
     
+    // Use the specific iframe URL for cleaning services
+    if (serviceId === 'cleaning') {
+      return 'https://cleanfox.bookingkoala.com/leads/form/ba6c96c8d577daa2d917ee106394a3fc4239d51b9c4c82f2e8d5d94e4a524df7ebd78709b3b32625e156593dcbfbbd75d42a586f15de1f8edb827355cfc1ef3f?embed=true';
+    }
+    
     // For other services, use the original logic
     const baseUrl = 'https://cleanfox.bookingkoala.com/booknow';
     const params = 'embed=true&bar=false&banner=false';

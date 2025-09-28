@@ -25,8 +25,8 @@ export default function Home() {
   const handleServiceSelect = (service: Service) => {
     setSelectedService(service);
     
-    // For Mobile Detailing, redirect to the embedded form
-    if (service.id === 'mobile-detailing') {
+    // For Mobile Detailing and Cleaning, redirect to the embedded form
+    if (service.id === 'mobile-detailing' || service.id === 'cleaning') {
       setCurrentStep('booking');
     } else {
       // For other services, use the traditional manual form
@@ -136,9 +136,9 @@ export default function Home() {
       setCurrentStep('service-selection');
       setSelectedService(null);
     } else if (currentStep === 'booking') {
-      // For mobile detailing, go back to service selection
+      // For mobile detailing and cleaning, go back to service selection
       // For other services, go back to manual form
-      if (selectedService?.id === 'mobile-detailing') {
+      if (selectedService?.id === 'mobile-detailing' || selectedService?.id === 'cleaning') {
         setCurrentStep('service-selection');
         setSelectedService(null);
       } else {
@@ -287,7 +287,7 @@ export default function Home() {
               </div>
             )}
 
-            {currentStep === 'booking' && selectedService && (selectedService.id === 'mobile-detailing' || submission) && (
+            {currentStep === 'booking' && selectedService && (selectedService.id === 'mobile-detailing' || selectedService.id === 'cleaning' || submission) && (
               <div className="glass-card rounded-3xl shadow-2xl border border-white/20 p-8 md:p-12">
                 <div className="mb-8">
                   <button
@@ -308,8 +308,8 @@ export default function Home() {
                 {/* Booking Koala iframe - show for supported services */}
                 <BookingKoalaIframe serviceId={selectedService.id} />
                 
-                {/* Only show Continue button for non-mobile detailing services */}
-                {selectedService.id !== 'mobile-detailing' && (
+                {/* Only show Continue button for services that don't have embedded forms with auto-redirect */}
+                {selectedService.id !== 'mobile-detailing' && selectedService.id !== 'cleaning' && (
                   <div className="mt-8 text-center">
                     <button 
                       onClick={() => setCurrentStep('submitted')} 
