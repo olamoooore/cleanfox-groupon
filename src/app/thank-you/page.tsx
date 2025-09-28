@@ -1,10 +1,11 @@
+'use client';
+
 import Link from 'next/link';
 import { CheckCircle, Clock, Calendar } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
 
 // Client component that uses useSearchParams
-'use client';
 
 function ThankYouContent() {
   console.log('Thank you page is rendering');
