@@ -17,34 +17,10 @@ const services: Service[] = [
     iconPath: '/images/services/mobile-cleaning.png?v=2024-updated',
   },
   {
-    id: 'deep-move-cleaning',
-    name: 'Move in/out Cleaning',
-    description: 'Comprehensive deep cleaning for moving in or out',
+    id: 'cleaning',
+    name: 'Cleaning',
+    description: 'Professional cleaning services for your home or office',
     iconPath: '/images/services/move-in-house-cleaning.png',
-  },
-  {
-    id: 'post-construction-cleaning',
-    name: 'Post Construction Cleaning',
-    description: 'Specialized cleaning after construction projects',
-    iconPath: '/images/services/post-construction.png',
-  },
-  {
-    id: 'junk-removal',
-    name: 'Junk Removal',
-    description: 'Professional junk and debris removal services',
-    iconPath: '/images/services/junk-removal.png',
-  },
-  {
-    id: 'gutter-cleaning',
-    name: 'Gutter Cleaning',
-    description: 'Professional gutter cleaning and maintenance',
-    iconPath: '/images/services/gutter-cleaning.png',
-  },
-  {
-    id: 'moving-services',
-    name: 'Moving Services',
-    description: 'Complete moving and relocation assistance',
-    iconPath: '/images/services/moving.png',
   },
 ];
 
@@ -56,7 +32,7 @@ interface ServiceSelectorProps {
 export default function ServiceSelector({ onServiceSelect, selectedService }: ServiceSelectorProps) {
   return (
     <div className="w-full max-w-7xl mx-auto px-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
         {services.map((service) => {
           const isSelected = selectedService?.id === service.id;
           
@@ -83,7 +59,7 @@ export default function ServiceSelector({ onServiceSelect, selectedService }: Se
               `} />
               
               {/* Image Container */}
-              <div className="relative h-48 overflow-hidden rounded-t-2xl bg-gradient-to-br from-white/90 to-gray-50/90 group-hover:from-white group-hover:to-gray-50 transition-all duration-500">
+              <div className="relative h-64 overflow-hidden rounded-t-2xl bg-gradient-to-br from-white/90 to-gray-50/90 group-hover:from-white group-hover:to-gray-50 transition-all duration-500">
                 <div className="relative w-full h-full p-4 flex items-center justify-center">
                   <div className="relative w-full h-full group-hover:scale-110 transition-transform duration-500 ease-out">
                     <Image

@@ -24,7 +24,14 @@ export default function Home() {
 
   const handleServiceSelect = (service: Service) => {
     setSelectedService(service);
-    setCurrentStep('manual-form');
+    
+    // For Mobile Detailing, redirect to the embedded form
+    if (service.id === 'mobile-detailing') {
+      setCurrentStep('booking');
+    } else {
+      // For other services, use the traditional manual form
+      setCurrentStep('manual-form');
+    }
   };
 
   // Function to upload image to Supabase storage
@@ -129,7 +136,14 @@ export default function Home() {
       setCurrentStep('service-selection');
       setSelectedService(null);
     } else if (currentStep === 'booking') {
-      setCurrentStep('manual-form');
+      // For mobile detailing, go back to service selection
+      // For other services, go back to manual form
+      if (selectedService?.id === 'mobile-detailing') {
+        setCurrentStep('service-selection');
+        setSelectedService(null);
+      } else {
+        setCurrentStep('manual-form');
+      }
     } else if (currentStep === 'submitted') {
       setCurrentStep('service-selection');
       setSelectedService(null);
@@ -154,7 +168,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-8">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight">
-                Clean fox Coupon Redeem
+                Clean Fox Coupon Redeem
               </h1>
             </div>
           </div>
@@ -273,7 +287,7 @@ export default function Home() {
               </div>
             )}
 
-            {currentStep === 'booking' && selectedService && submission && (
+            {currentStep === 'booking' && selectedService && (selectedService.id === 'mobile-detailing' || submission) && (
               <div className="glass-card rounded-3xl shadow-2xl border border-white/20 p-8 md:p-12">
                 <div className="mb-8">
                   <button
@@ -281,7 +295,7 @@ export default function Home() {
                     className="flex items-center text-white/80 hover:text-white transition-all duration-200 group"
                   >
                     <span className="mr-2 transform group-hover:-translate-x-1 transition-transform">←</span>
-                    Back to Form
+                    {selectedService.id === 'mobile-detailing' ? 'Back to Service Selection' : 'Back to Form'}
                   </button>
                 </div>
                 <div className="text-center mb-8">
@@ -294,14 +308,17 @@ export default function Home() {
                 {/* Booking Koala iframe - show for supported services */}
                 <BookingKoalaIframe serviceId={selectedService.id} />
                 
-                <div className="mt-8 text-center">
-                  <button 
-                    onClick={() => setCurrentStep('submitted')} 
-                    className="bg-gradient-to-r from-primary to-secondary hover:from-primary-600 hover:to-secondary-600 text-white px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
-                  >
-                    Continue
-                  </button>
-                </div>
+                {/* Only show Continue button for non-mobile detailing services */}
+                {selectedService.id !== 'mobile-detailing' && (
+                  <div className="mt-8 text-center">
+                    <button 
+                      onClick={() => setCurrentStep('submitted')} 
+                      className="bg-gradient-to-r from-primary to-secondary hover:from-primary-600 hover:to-secondary-600 text-white px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
+                    >
+                      Continue
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
