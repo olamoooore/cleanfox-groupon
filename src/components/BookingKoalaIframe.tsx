@@ -111,7 +111,7 @@ export default function BookingKoalaIframe({ serviceId, className = '', onFormSu
                 onFormSubmit();
               }
             }
-          } catch (e) {
+          } catch {
             // Expected CORS error
           }
         }
@@ -134,7 +134,7 @@ export default function BookingKoalaIframe({ serviceId, className = '', onFormSu
         document.head.removeChild(existingScript);
       }
     };
-  }, [router, onFormSubmit]);
+  }, [router, onFormSubmit, serviceId]);
 
   const getIframeUrl = (serviceId: string) => {
     // Use the specific iframe URL for mobile detailing

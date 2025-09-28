@@ -71,8 +71,26 @@ const nextConfig: NextConfig = {
     ];
   },
   
-  // Webpack configuration for better caching
-  webpack: (config, { dev, isServer }) => {
+  // Experimental features for better performance
+  experimental: {
+    // Enable Turbopack for faster builds (Next.js 13+)
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+  },
+
+  // Webpack configuration for better caching (only when not using Turbopack)
+  webpack: (config, { dev, isServer, nextRuntime }) => {
+    // Skip webpack modifications when using Turbopack
+    if (nextRuntime === 'edge') {
+      return config;
+    }
+
     if (!dev && !isServer) {
       // Add content hash to chunk names for better cache busting
       config.optimization.splitChunks = {

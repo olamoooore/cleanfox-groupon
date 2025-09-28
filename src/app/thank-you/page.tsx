@@ -2,14 +2,12 @@
 
 import Link from 'next/link';
 import { CheckCircle, Clock, Calendar, ArrowLeft } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+
 import { useState, useEffect, Suspense } from 'react';
 
 // Client component that uses useSearchParams
 function ThankYouContent() {
   const [showBookingForm, setShowBookingForm] = useState(false);
-  const searchParams = useSearchParams();
-  const service = searchParams.get('service');
 
   useEffect(() => {
     // Load BookingKoala embed script when booking form is shown
@@ -114,13 +112,13 @@ function ThankYouContent() {
                   <div className="w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mr-4 mt-0.5 flex-shrink-0">
                     <span className="text-white text-sm font-bold">1</span>
                   </div>
-                  <span>We'll review your booking request within 24 hours</span>
+                  <span>We&apos;ll review your booking request within 24 hours</span>
                 </li>
                 <li className="flex items-start">
                   <div className="w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mr-4 mt-0.5 flex-shrink-0">
                     <span className="text-white text-sm font-bold">2</span>
                   </div>
-                  <span>You'll receive a confirmation email with details</span>
+                  <span>You&apos;ll receive a confirmation email with details</span>
                 </li>
                 <li className="flex items-start">
                   <div className="w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mr-4 mt-0.5 flex-shrink-0">
@@ -135,7 +133,7 @@ function ThankYouContent() {
             <div className="glass-card rounded-2xl border border-orange-400/30 bg-gradient-to-r from-orange-500/10 to-orange-600/10 p-6 md:p-8 mb-8">
               <div className="flex items-center justify-center mb-4">
                 <Clock className="w-6 h-6 text-orange-400 mr-3" />
-                <h3 className="text-xl font-bold text-white">Can't wait for our call?</h3>
+                <h3 className="text-xl font-bold text-white">Can&apos;t wait for our call?</h3>
               </div>
               <p className="text-white/80 mb-6">
                 Book your appointment immediately using our direct booking system.

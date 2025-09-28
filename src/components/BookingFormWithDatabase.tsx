@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { Calendar, CheckCircle, User, MapPin, Clock, MessageSquare, Camera, Upload, X } from 'lucide-react';
 import type { Service } from './ServiceSelector';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
@@ -86,7 +86,7 @@ export default function BookingFormWithDatabase({ service, couponCode, onBack }:
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
     const filePath = `${folder}/${fileName}`;
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('form-images')
       .upload(filePath, file);
 
@@ -128,7 +128,7 @@ export default function BookingFormWithDatabase({ service, couponCode, onBack }:
 
       // Save to Supabase (only if configured)
       if (supabase && isSupabaseConfigured()) {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('form_submissions')
           .insert([
             {
@@ -218,7 +218,7 @@ export default function BookingFormWithDatabase({ service, couponCode, onBack }:
             </div>
           </div>
           <div className="bg-blue-100 text-brand-blue rounded-full p-2">
-            <Image src={service.iconPath} alt={service.name} width={24} height={24} className="w-6 h-6" />
+            <NextImage src={service.iconPath} alt={service.name} width={24} height={24} className="w-6 h-6" />
           </div>
         </div>
       </div>
@@ -468,9 +468,11 @@ export default function BookingFormWithDatabase({ service, couponCode, onBack }:
                   <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
                     {formData.propertyImages.map((file, index) => (
                       <div key={index} className="relative">
-                        <img
+                        <NextImage
                           src={URL.createObjectURL(file)}
                           alt={`Property ${index + 1}`}
+                          width={96}
+                          height={96}
                           className="w-full h-24 object-cover rounded-lg"
                         />
                         <button
@@ -518,9 +520,11 @@ export default function BookingFormWithDatabase({ service, couponCode, onBack }:
                   <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
                     {formData.vehicleImages.map((file, index) => (
                       <div key={index} className="relative">
-                        <img
+                        <NextImage
                           src={URL.createObjectURL(file)}
                           alt={`Vehicle ${index + 1}`}
+                          width={96}
+                          height={96}
                           className="w-full h-24 object-cover rounded-lg"
                         />
                         <button

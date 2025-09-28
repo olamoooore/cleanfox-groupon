@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import NextImage from 'next/image'
 import { supabase, dbOperations, FormSubmission, isSupabaseConfigured } from '@/lib/supabase'
 import { User } from '@supabase/supabase-js'
 import { 
@@ -912,9 +913,11 @@ export default function AdminDashboard() {
                           console.log('Rendering property image:', url);
                           return (
                           <div key={index} className="relative group">
-                            <img 
+                            <NextImage 
                               src={url} 
                               alt={`Voucher ${index + 1}`} 
+                              width={200}
+                              height={128}
                               className="w-full h-32 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
                               onClick={() => openImagePreview(viewingSubmission.property_images!, index, 'Voucher Images')}
                               onLoad={() => {
@@ -923,8 +926,6 @@ export default function AdminDashboard() {
                               onError={(e) => {
                                 console.error('Failed to load image:', url);
                                 console.error('Error details:', e);
-                                // Show a placeholder instead of hiding
-                                e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIEZhaWxlZCB0byBMb2FkPC90ZXh0Pjwvc3ZnPg==';
                               }}
                             />
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-lg flex items-center justify-center">
@@ -945,9 +946,11 @@ export default function AdminDashboard() {
                           console.log('Rendering vehicle image:', url);
                           return (
                           <div key={index} className="relative group">
-                            <img 
+                            <NextImage 
                               src={url} 
                               alt={`Vehicle ${index + 1}`} 
+                              width={200}
+                              height={128}
                               className="w-full h-32 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
                               onClick={() => openImagePreview(viewingSubmission.vehicle_images!, index, 'Vehicle Images')}
                               onLoad={() => {
@@ -956,8 +959,6 @@ export default function AdminDashboard() {
                               onError={(e) => {
                                 console.error('Failed to load vehicle image:', url);
                                 console.error('Error details:', e);
-                                // Show a placeholder instead of hiding
-                                e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIEZhaWxlZCB0byBMb2FkPC90ZXh0Pjwvc3ZnPg==';
                               }}
                             />
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-lg flex items-center justify-center">
@@ -1044,9 +1045,11 @@ export default function AdminDashboard() {
             )}
 
             {/* Image */}
-            <img
+            <NextImage
               src={imagePreview.images[imagePreview.currentIndex]}
               alt={`${imagePreview.title} ${imagePreview.currentIndex + 1}`}
+              width={800}
+              height={600}
               className="max-w-full max-h-full object-contain"
               onLoad={() => {
                 console.log('Successfully loaded preview image:', imagePreview.images[imagePreview.currentIndex]);
