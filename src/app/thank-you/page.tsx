@@ -79,7 +79,7 @@ export default function ThankYouPage() {
           <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
             <div className="flex items-center mb-2">
               <Clock className="h-5 w-5 text-orange-600 mr-2" />
-              <h3 className="text-lg font-semibold text-orange-800">Can't wait for our call?</h3>
+              <h3 className="text-lg font-semibold text-orange-800">Can&apos;t wait for our call?</h3>
             </div>
             <p className="text-orange-700 mb-3">
               Book your mobile detailing appointment immediately using our direct booking system.
